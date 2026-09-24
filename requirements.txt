@@ -1,0 +1,11 @@
+# Core dependencies for the BASELINE pipeline (demo.py, demo_realtime.py, benchmark.py, tests).
+# Deliberately does NOT include torch — see README > Limitations for why, and
+# `pip install torch` yourself only if you intend to use the trained-model /
+# training path (src/segmentation/architectures, src/segmentation/trained_model.py,
+# src/segmentation/losses.py, scripts/train.py).
+numpy>=1.24
+scipy>=1.10
+scikit-learn>=1.3
+pyyaml>=6.0
+matplotlib>=3.7
+pytest>=7.4
