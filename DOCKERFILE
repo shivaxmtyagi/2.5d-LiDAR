@@ -1,0 +1,15 @@
+# Baseline (heuristic) pipeline only — no torch/CUDA (see README > Limitations
+# for why training isn't part of this image). Build the trained-model path
+# yourself with a torch base image if/when you have a real checkpoint.
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN mkdir -p data/predictions models/checkpoints
+
+CMD ["python", "scripts/demo.py"]

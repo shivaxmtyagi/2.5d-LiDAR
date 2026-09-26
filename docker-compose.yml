@@ -1,0 +1,6 @@
+services:
+  demo:
+    build: .
+    volumes:
+      - ./data:/app/data
+    command: ["python", "scripts/demo.py"]
