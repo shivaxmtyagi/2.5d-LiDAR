@@ -1,0 +1,78 @@
+# Adaptive Variable-Resolution 2.5D LiDAR Mapping — default configuration
+# Every numeric threshold used anywhere in the pipeline should be reachable
+# from this file rather than hard-coded in source.
+
+sensor:
+  min_range: 1.0        # meters, points closer than this are dropped (self-returns)
+  max_range: 100.0       # meters, points farther than this are dropped
+  height: 1.8             # meters above ground, used for demo/synthetic sensor pose
+
+preprocessing:
+  statistical_outlier:
+    enabled: true
+    k_neighbors: 12
+    std_ratio: 2.0
+  voxel_downsample:
+    enabled: true
+    voxel_size: 0.03
+
+grid:
+  # resolution_mode: "piecewise" uses the ring breakpoints below.
+  # "continuous" uses a linear function resolution(r) = a + b*r, clamped.
+  resolution_mode: piecewise
+  breakpoints:            # each entry: points up to `max_range` use `resolution`
+    - {max_range: 10.0, resolution: 0.05}
+    - {max_range: 25.0, resolution: 0.10}
+    - {max_range: 50.0, resolution: 0.20}
+    - {max_range: 75.0, resolution: 0.35}
+    - {max_range: 100.0, resolution: 0.50}
+  continuous:
+    a: 0.05                # base resolution at r=0
+    b: 0.0047               # growth per meter (tuned so ~100m -> ~0.5m)
+    min_resolution: 0.05
+    max_resolution: 0.50
+  grid_extent: 100.0       # half-width of the square area the grid covers (m)
+
+uniform_grid_baseline:
+  resolution: 0.05         # the "naive" fixed high-resolution grid used for comparison
+
+terrain:
+  ground_z_percentile: 5        # percentile of local neighborhood z used as ground estimate
+  neighbor_radius: 1.0          # meters, for local plane/roughness estimation
+  max_drivable_slope_deg: 15.0
+  max_drivable_height_diff: 0.15   # meters, curb/step threshold
+  roughness_threshold: 0.06        # meters, stddev of residuals
+
+objects:
+  clustering:
+    algorithm: dbscan
+    eps: 0.6
+    min_samples: 6
+  size_heuristics:            # baseline classifier, used only in DEMO/BASELINE mode
+    pedestrian_max_footprint: 1.0   # meters (max of width/length)
+    pedestrian_max_height: 2.2
+    vehicle_min_footprint: 1.6
+  tracking:
+    max_match_distance: 1.5   # meters, nearest-neighbor association gate
+    dynamic_speed_threshold: 0.3  # m/s, above this an object is marked dynamic
+    max_missed_frames: 5          # frames an unmatched track is kept before deletion
+
+mapping:
+  temporal_decay: 0.9          # alpha for exponential confidence decay per missed frame
+  dynamic_object_timeout_frames: 5
+  confidence_fusion_alpha: 0.6  # weight given to the newest measurement on update
+
+model:
+  confidence_threshold: 0.5
+  mode: baseline    # "baseline" (heuristic, no trained weights) or "trained"
+  checkpoint_path: models/checkpoints/segmentation.pt   # only used if mode == trained
+
+performance:
+  target_fps: 10
+
+classes:
+  # Canonical semantic class table. Configurable / remappable.
+  0: unknown
+  1: terrain
+  2: static_obstacle
+  3: dynamic_object

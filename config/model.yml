@@ -1,0 +1,46 @@
+# Model + training configuration (Module 9). Separate from configs/default.yaml
+# because these parameters only matter when actually training — they don't
+# affect inference-time pipeline behavior.
+
+dataset:
+  root_dir: /path/to/semantickitti      # must contain a "sequences/" folder — see
+                                          # src/input/semantic_kitti.py docstring
+  train_sequences: ["00", "01", "02", "03", "04", "05", "06", "07", "09", "10"]
+  valid_sequences: ["08"]
+
+architecture:
+  name: pointnet2
+  num_classes: 4          # matches configs/default.yaml: classes
+  in_channels: 1           # 1 = intensity
+
+training:
+  epochs: 100
+  batch_size: 8
+  points_per_sample: 4096  # points sampled per training example (see scripts/train.py)
+  learning_rate: 0.001
+  lr_decay_step: 20
+  lr_decay_gamma: 0.5
+  weight_decay: 0.0001
+  device: cuda              # "cuda" or "cpu" — falls back to cpu automatically if no GPU
+  num_workers: 4
+  checkpoint_every_epochs: 5
+  resume_from: null         # path to a .pt file to resume training from, or null
+
+augmentation:
+  yaw_rotation: true
+  max_yaw_deg: 180.0
+  xy_translation_std: 0.1
+  jitter_std: 0.01
+  jitter_clip: 0.05
+  scale_range: [0.95, 1.05]
+  dropout_max_ratio: 0.1
+  noise_points_max: 20
+
+loss:
+  type: weighted_ce   # "weighted_ce" | "focal" | "plain_ce"
+  focal_gamma: 2.0
+  focal_use_alpha: true
+
+paths:
+  checkpoint_dir: models/checkpoints
+  log_dir: data/processed/training_logs
