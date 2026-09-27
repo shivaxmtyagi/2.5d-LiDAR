@@ -1,6 +1,6 @@
 # Core dependencies for the BASELINE pipeline (demo.py, demo_realtime.py, benchmark.py, tests).
 # Deliberately does NOT include torch — see README > Limitations for why, and
-# `pip install torch` yourself only if you intend to use the trained-model /
+# `pip install torch if  trained-model 
 # training path (src/segmentation/architectures, src/segmentation/trained_model.py,
 # src/segmentation/losses.py, scripts/train.py).
 numpy>=1.24
