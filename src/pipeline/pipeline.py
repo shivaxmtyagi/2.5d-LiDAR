@@ -1,6 +1,5 @@
 """
 AdaptiveLidarPipeline (Module 38) — the single integration point.
-
 `result = pipeline.process(point_cloud)` runs every stage and returns a
 PipelineResult carrying each stage's output, plus per-stage timing (Module 39
 logging) so the dashboard/benchmark can report latency breakdowns, not just
