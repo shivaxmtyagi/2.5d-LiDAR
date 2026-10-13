@@ -1,13 +1,11 @@
 """
-Terrain analysis (Module 4).
-
+Terrain analysis 
 Takes the point cloud + semantic predictions and produces drivable /
 non-drivable classification. Deliberately does NOT rely on semantic class
 alone (spec section 11): a point locally flat and low can be "terrain" by
 semantics yet still sit on too steep a local slope, or have too much local
 roughness, to be safely drivable — both are checked geometrically via a
 local plane fit over each point's k nearest neighbors.
-
 Implementation note: the local plane fit (normally one small least-squares
 solve per point) is batched into a single vectorized computation using the
 closed-form normal equations for all N points at once
